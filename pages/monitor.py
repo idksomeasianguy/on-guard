@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 import re
 import easyocr as ocr
 from PIL import Image
+import vonage
 
 st.set_page_config(
    page_title="On Guard",
@@ -28,8 +29,9 @@ def load_data():
    return df
 
 @st.cache_resource(show_spinner="Loading the image reader...")
-def load_model():
-   return ocr.Reader(["en"], model_storage_directory=".")
+def load_reader():
+   reader = ocr.Reader(["en"], model_storage_directory=".")
+   return reader
 
 st.title(":fencer: On Guard")
 
@@ -37,6 +39,7 @@ with st.form(key="my_form", clear_on_submit=True):
    text = st.text_area("Text to analyze")
    images = st.file_uploader(label="Upload images", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
    user_email = st.text_input("(Recommended) Send alerts to:", placeholder="juandelacruz@gmail.com")
+   phone_number = st.text_input("(Recommended) Send SMS notifications to:", placeholder="+63 999 999 9999")
    submit_button = st.form_submit_button(label="Monitor my child's conversations!")
 
 raw_spam_data = load_data()
@@ -70,7 +73,8 @@ def detect(text):
 
 notif_text = []
 translator = Translator()
-reader = load_model()
+reader = load_reader()
+client = vonage.Client(key=st.secrets["key"], secret=st.secrets["secret"])
 txt = ""
 file_results = []
 
@@ -98,7 +102,7 @@ if submit_button:
                img_text.append(text[1])
             
             if len(img_text) == 0:
-               file_results.append(f"The AI can't see any text in {img.name}.")
+               file_results.append(f"We couldn't see any text in {img.name}.")
             else:
                img_content = " ".join(img_text)
                img_content = translator.translate(img_content).text
@@ -122,10 +126,24 @@ if submit_button:
       server.login(st.secrets["email"], st.secrets["password"])
       server.sendmail(st.secrets["email"], user_email, msg.as_string())
       server.quit()
-      if len(notif_text) > 0:
-         st.error("There was a threat in your provided file(s)! More details will be sent through your email. If you don't see it, check your spam folder.")
-      elif len(images) > 0 and len(notif_text) == 0:
-         st.success("Good news! Looks like all of your files are safe!")
+   
+   phone_pattern = r"((\+[0-9]{2})|0)[.\- ]?9[0-9]{2}[.\- ]?[0-9]{3}[.\- ]?[0-9]{4}"
+   if re.fullmatch(phone_pattern, phone_number):
+      if type(notif_text) is list:
+         notif_text = "\n".join(notif_text)
+      phone_number = "".join(phone_number.split())
+      response = client.sms.send_message(
+         {
+            "from": "Flagged!",
+            "to": phone_number,
+            "text": notif_text,
+         }
+      )
+
+   if len(notif_text) > 0:
+      st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.")
+   elif len(images) > 0 and len(notif_text) == 0:
+      st.success("Good news! Looks like all of your files are safe!")
 
 st.write(txt)
 

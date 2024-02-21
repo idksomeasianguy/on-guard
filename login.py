@@ -1,6 +1,11 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 
+st.set_page_config(
+   page_title="Login - On Guard",
+   page_icon="🤺"
+)
+
 st.title(":fencer: On Guard")
 st.subheader("Log In")
 with st.form(key="login", clear_on_submit=True):
