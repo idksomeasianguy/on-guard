@@ -6,7 +6,8 @@ st.set_page_config(
    page_icon="🤺"
 )
 
-st.title(":fencer: On Guard")
+st.image("on_guard_logo.jpg")
+
 st.subheader("Log In")
 with st.form(key="login", clear_on_submit=True):
     username = st.text_input("Username")
