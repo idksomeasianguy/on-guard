@@ -33,7 +33,7 @@ def load_reader():
    reader = ocr.Reader(["en"], model_storage_directory=".")
    return reader
 
-st.title(":fencer: On Guard")
+st.image("on_guard_logo.jpg", width=400)
 
 with st.form(key="my_form", clear_on_submit=True):
    text = st.text_area("Text to analyze")
