@@ -6,9 +6,7 @@ st.set_page_config(
    page_icon="🤺"
 )
 
-left, center, right = st.columns(3)
-with center:
-   st.image("on_guard_logo.jpg", width=400)
+st.image("on_guard_logo.jpg", width=400)
 
 st.subheader("Log In")
 with st.form(key="login", clear_on_submit=True):
