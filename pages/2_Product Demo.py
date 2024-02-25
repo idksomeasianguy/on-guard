@@ -11,11 +11,22 @@ import re
 import easyocr as ocr
 from PIL import Image
 import vonage
+import whisper
+from tempfile import NamedTemporaryFile
 
 st.set_page_config(
-   page_title="On Guard",
-   page_icon="🤺"
+   page_title="Product Demo - On Guard",
 )
+st.markdown("""<style>
+               div.stButton > button:first-child {
+                  background-color: white;
+                  color: #64A8E7;
+               } 
+               div.stButton > button:first-child:hover {
+                  background-color: #64A8E7;
+                  color: white;
+               }
+               </style>""", unsafe_allow_html=True)
 
 @st.cache_data(show_spinner="Loading data...")
 def load_data():
@@ -33,11 +44,18 @@ def load_reader():
    reader = ocr.Reader(["en"], model_storage_directory=".")
    return reader
 
-st.image("on_guard_logo.jpg", width=400)
+@st.cache_resource(show_spinner="Loading Whisper...")
+def load_whisper():
+   w = whisper.load_model("base")
+   return w
+
+logo = Image.open("on_guard_logo.jpg")
+st.image(logo, width=400)
 
 with st.form(key="my_form", clear_on_submit=True):
    text = st.text_area("Text to analyze")
    images = st.file_uploader(label="Upload images", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
+   raw_audio = st.file_uploader(label="Upload audio", type=["mp3", "mp4", "wav", "aac", "m4a"], accept_multiple_files=True, key="audio")
    user_email = st.text_input("(Recommended) Send alerts to:", placeholder="juandelacruz@gmail.com")
    phone_number = st.text_input("(Recommended) Send SMS notifications to:", placeholder="+63 999 999 9999")
    submit_button = st.form_submit_button(label="Monitor my child's conversations!")
@@ -75,22 +93,21 @@ notif_text = []
 translator = Translator()
 reader = load_reader()
 client = vonage.Client(key=st.secrets["key"], secret=st.secrets["secret"])
-txt = ""
 file_results = []
 
 if submit_button:
    with st.spinner("Processing your input..."):
       if len(text) == 0 or text.isspace():
-         txt = "The provided text is empty!"
+         st.write("The provided text is empty!")
       else:
          text = translator.translate(text).text
          if detect(text)[0] == 1:
-            txt = ":red[Threat detected in the provided text!]"
+            st.write(":red[:triangular_flag_on_post: Threat detected in the provided text!]")
             notif_text.append("Threat detected in the provided text!")
             notif_text.append(text)
             notif_text.append("\n")
          else:
-            txt = ":green[Looks like the provided text is safe!]"
+            st.write(":green[:thumbsup: Looks like the provided text is safe!]")
 
       if len(images) > 0:
          for img in images:
@@ -102,17 +119,33 @@ if submit_button:
                img_text.append(text[1])
             
             if len(img_text) == 0:
-               file_results.append(f"We couldn't see any text in {img.name}.")
+               st.write(f"We couldn't see any text in {img.name}.")
             else:
                img_content = " ".join(img_text)
                img_content = translator.translate(img_content).text
                if detect(img_content)[0] == 1:
-                  file_results.append(f":red[Threat detected in {img.name}!]")
+                  st.write(f":red[:triangular_flag_on_post: Threat detected in {img.name}!]")
                   notif_text.append(f"Threat detected in {img.name}!")
                   notif_text.append(img_content)
                   notif_text.append("\n")
                else:
-                  file_results.append(f":green[Looks like {img.name} is safe!]")
+                  st.write(f":green[:thumbsup: Looks like {img.name} is safe!]")
+      if len(raw_audio) > 0:
+         for a in raw_audio:
+               with NamedTemporaryFile(suffix="mp3") as temp:
+                  temp.write(a.getvalue())
+                  temp.seek(0)
+                  whisper_model = whisper.load_model("base")
+                  result = whisper_model.transcribe(temp.name)
+                  audio_content = str(result["text"])
+                  audio_content = translator.translate(audio_content).text
+                  if detect(audio_content)[0] == 1:
+                     file_results.append(f":red[:triangular_flag_on_post: Threat detected in {a.name}!]")
+                     notif_text.append(f"Threat detected in {a.name}!")
+                     notif_text.append(audio_content)
+                     notif_text.append("\n")
+                  else:
+                     file_results.append(f":green[:thumbsup: Looks like {a.name} is safe!]")
 
    email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
    if re.fullmatch(email_pattern, user_email):
@@ -127,25 +160,20 @@ if submit_button:
       server.sendmail(st.secrets["email"], user_email, msg.as_string())
       server.quit()
    
-   phone_pattern = r"((\+[0-9]{2})|0)[.\- ]?9[0-9]{2}[.\- ]?[0-9]{3}[.\- ]?[0-9]{4}"
+   phone_pattern = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
    if re.fullmatch(phone_pattern, phone_number):
       if type(notif_text) is list:
          notif_text = "\n".join(notif_text)
       phone_number = "".join(phone_number.split())
       response = client.sms.send_message(
          {
-            "from": "Flagged!",
+            "from": "On Guard",
             "to": phone_number,
             "text": notif_text,
          }
       )
 
-   if len(notif_text) > 0:
-      st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.")
-   elif len(images) > 0 and len(notif_text) == 0:
-      st.success("Good news! Looks like all of your files are safe!")
-
-st.write(txt)
-
-for f in file_results:
-   st.write(f)
+   if len(notif_text) > 0 and re.fullmatch(email_pattern, user_email) and re.fullmatch(phone_pattern, phone_number):
+      st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.", icon="🚩")
+   elif len(images) > 0 and len(raw_audio) > 0 and len(notif_text) == 0:
+      st.success("Good news! Looks like all of your files are safe!", icon="👍")

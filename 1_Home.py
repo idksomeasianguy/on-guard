@@ -1,6 +1,12 @@
 import streamlit as st
+from PIL import Image
 
-st.image("on_guard_logo.jpg", width=400)
+st.set_page_config(
+   page_title="Home - On Guard",
+)
+
+logo = Image.open("on_guard_logo.jpg")
+st.image(logo, width=400)
 
 st.subheader('We believe that the youth is the hope of the nation and we would like to be part of the solution.')
 
