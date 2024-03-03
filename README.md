@@ -3,4 +3,4 @@ On Guard is a parental control app designed to help parents and guardians to be 
 
 Our app is now available on Streamlit!
 
-https://on-guard-1.streamlit.app/
+https://on-guard.streamlit.app/
