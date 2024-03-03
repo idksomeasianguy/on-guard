@@ -28,7 +28,7 @@ Jameela = Image.open("Jameela_Ong.jpg")
 st.image(Jameela, width=500)
 
 #Jana
-Jana = Image.open("Jana_Uy.jpg")
+Jana = Image.open("Annika_Uy.jpg")
 st.image(Jana, width=540)
 
 st.markdown("Representing Victory Christian International School - Homeschool Global")
