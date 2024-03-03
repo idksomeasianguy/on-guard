@@ -13,8 +13,23 @@ st.subheader('On Guard is a parental control app created to assist parents and g
 st.subheader('We aim to keep every Filipino child safe from the potential threats online and empower parents to their highest.')
 
 st.subheader("Our Team")
-st.markdown("**Jickle Clain Ong**: Team Leader")
-st.markdown("**Luna Rinoa Batungbakal**: Lead Programmer")
-st.markdown("**Jana Annika Uy**: Front-End Developer")
-st.markdown("**Jameela Ysabelle Clay Ong**: Multimedia Artist")
-st.markdown("Representing Victory Christian International School")
+
+#Jickle
+Jickle = Image.open("Jickle_Ong.jpg")
+st.image(Jickle, width=410)
+
+#Luna
+Luna = Image.open("Luna_Batungbakal.jpg")
+st.image(Luna, width=480)
+
+
+#Jameela
+Jameela = Image.open("Jameela_Ong.jpg")
+st.image(Jameela, width=500)
+
+#Jana
+Jana = Image.open("Jana_Uy.jpg")
+st.image(Jana, width=540)
+
+st.markdown("Representing Victory Christian International School - Homeschool Global")
+
