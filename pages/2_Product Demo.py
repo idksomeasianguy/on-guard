@@ -165,7 +165,6 @@ if submit_button:
    if re.match(phone_pattern, phone_number):
       if type(notif_text) is list:
          notif_text = "\n".join(notif_text)
-      st.text("Hi!")
       response = client.sms.send_message(
          {
             "from": "On Guard",
