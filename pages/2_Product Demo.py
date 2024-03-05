@@ -148,7 +148,7 @@ if submit_button:
                      file_results.append(f":green[:thumbsup: Looks like {a.name} is safe!]")
 
    email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
-   if re.fullmatch(email_pattern, user_email):
+   if re.match(email_pattern, user_email):
       notif_text = "\n".join(notif_text)
       msg = MIMEText(notif_text)
       msg["From"] = st.secrets["email"]
@@ -160,11 +160,12 @@ if submit_button:
       server.sendmail(st.secrets["email"], user_email, msg.as_string())
       server.quit()
    
-   phone_pattern = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
-   if re.fullmatch(phone_pattern, phone_number):
+   phone_number = "".join(phone_number.split())
+   phone_pattern = r"^\+[1-9]\d{1,14}$"
+   if re.match(phone_pattern, phone_number):
       if type(notif_text) is list:
          notif_text = "\n".join(notif_text)
-      phone_number = "".join(phone_number.split())
+      st.text("Hi!")
       response = client.sms.send_message(
          {
             "from": "On Guard",
@@ -172,11 +173,13 @@ if submit_button:
             "text": notif_text,
          }
       )
+   elif len(phone_number) > 0 and (not phone_number.isspace()) and (not re.match(phone_pattern, phone_number)):
+      st.error("You put an invalid phone number!")
 
-   if len(notif_text) > 0 and (re.fullmatch(email_pattern, user_email) or re.fullmatch(phone_pattern, phone_number)):
+   if len(notif_text) > 0 and (re.match(email_pattern, user_email) or re.match(phone_pattern, phone_number)):
       st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.", icon="🚩")
    elif len(images) > 0 and len(raw_audio) > 0 and len(notif_text) == 0:
       st.success("Good news! Looks like all of your files are safe!", icon="👍")
-   
+
    for f in file_results:
       st.write(f)
