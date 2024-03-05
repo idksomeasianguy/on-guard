@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 import smtplib
 from email.mime.text import MIMEText
 import re
@@ -90,7 +90,7 @@ def detect(text):
    return prediction
 
 notif_text = []
-translator = Translator()
+translator = GoogleTranslator(source="auto", target="en")
 reader = load_reader()
 client = vonage.Client(key=st.secrets["key"], secret=st.secrets["secret"])
 file_results = []
@@ -100,7 +100,7 @@ if submit_button:
       if len(text) == 0 or text.isspace():
          st.write("The provided text is empty!")
       else:
-         text = translator.translate(text).text
+         text = translator.translate(text)
          if detect(text)[0] == 1:
             st.write(":red[:triangular_flag_on_post: Threat detected in the provided text!]")
             notif_text.append("Threat detected in the provided text!")
@@ -122,7 +122,7 @@ if submit_button:
                st.write(f"We couldn't see any text in {img.name}.")
             else:
                img_content = " ".join(img_text)
-               img_content = translator.translate(img_content).text
+               img_content = translator.translate(img_content)
                if detect(img_content)[0] == 1:
                   st.write(f":red[:triangular_flag_on_post: Threat detected in {img.name}!]")
                   notif_text.append(f"Threat detected in {img.name}!")
@@ -138,7 +138,7 @@ if submit_button:
                   whisper_model = whisper.load_model("base")
                   result = whisper_model.transcribe(temp.name)
                   audio_content = str(result["text"])
-                  audio_content = translator.translate(audio_content).text
+                  audio_content = translator.translate(audio_content)
                   if detect(audio_content)[0] == 1:
                      file_results.append(f":red[:triangular_flag_on_post: Threat detected in {a.name}!]")
                      notif_text.append(f"Threat detected in {a.name}!")
@@ -177,3 +177,6 @@ if submit_button:
       st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.", icon="🚩")
    elif len(images) > 0 and len(raw_audio) > 0 and len(notif_text) == 0:
       st.success("Good news! Looks like all of your files are safe!", icon="👍")
+   
+   for f in file_results:
+      st.write(f)
