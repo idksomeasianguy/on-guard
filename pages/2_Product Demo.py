@@ -173,7 +173,7 @@ if submit_button:
          }
       )
 
-   if len(notif_text) > 0 and re.fullmatch(email_pattern, user_email) and re.fullmatch(phone_pattern, phone_number):
+   if len(notif_text) > 0 and (re.fullmatch(email_pattern, user_email) or re.fullmatch(phone_pattern, phone_number)):
       st.error("There was a threat in your provided file(s)! More details will be sent through your email and/or SMS. If you don't see it, check your spam.", icon="🚩")
    elif len(images) > 0 and len(raw_audio) > 0 and len(notif_text) == 0:
       st.success("Good news! Looks like all of your files are safe!", icon="👍")
