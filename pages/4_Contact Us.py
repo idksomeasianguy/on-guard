@@ -16,7 +16,7 @@ Concerns = '<p style="font-size: 20px;">Feel free to reach out to us if you have
 st.markdown(Concerns, unsafe_allow_html=True)
 
 st.subheader('Email: onguard.vcis@gmail.com')
-st.subheader('Contact Number: +631-234-5678')
+st.subheader('Contact Number: +63 101 234 5678')
 
 
 st.subheader('Social Media Platforms')
