@@ -1,12 +1,19 @@
 import streamlit as st
 from PIL import Image
 
+
 st.set_page_config(
    page_title="Home - On Guard",
 )
 
 logo = Image.open("on_guard_logo.jpg")
 st.image(logo, width=400)
+
+
+video_file = open('Guide.mp4', 'rb')
+video_bytes = video_file.read()
+
+st.video(video_bytes)
 
 st.subheader('We believe that the youth is the hope of the nation and we would like to be part of the solution.')
 
