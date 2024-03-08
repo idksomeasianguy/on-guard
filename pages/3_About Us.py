@@ -15,20 +15,20 @@ st.subheader('We aim to keep every Filipino child safe from the potential threat
 st.subheader("Our Team")
 
 #Jickle
-Jickle = Image.open("Jickle_Ong.jpg")
+Jickle = Image.open("Jickle Ong.png")
 st.image(Jickle, width=410)
 
 #Luna
-Luna = Image.open("Luna_Batungbakal.jpg")
+Luna = Image.open("Luna Batungbakal.png")
 st.image(Luna, width=480)
 
 
 #Jameela
-Jameela = Image.open("Jameela_Ong.jpg")
+Jameela = Image.open("Jameela Ong.png")
 st.image(Jameela, width=500)
 
 #Jana
-Jana = Image.open("Annika_Uy.jpg")
+Jana = Image.open("Jana Uy.png")
 st.image(Jana, width=540)
 
 st.markdown("Representing Victory Christian International School - Homeschool Global")
