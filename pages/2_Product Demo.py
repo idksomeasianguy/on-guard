@@ -56,8 +56,8 @@ with st.form(key="my_form", clear_on_submit=True):
    text = st.text_area("Text to analyze")
    images = st.file_uploader(label="Upload images", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
    raw_audio = st.file_uploader(label="Upload audio", type=["mp3", "mp4", "wav", "aac", "m4a"], accept_multiple_files=True, key="audio")
-   user_email = st.text_input("(Recommended) Send alerts to:", placeholder="juandelacruz@gmail.com")
-   phone_number = st.text_input("(Recommended) Send SMS notifications to:", placeholder="+63 999 999 9999")
+   user_email = st.text_input("(Recommended) Send alerts to:", placeholder="juandelacruz@gmail.com", type="password")
+   phone_number = st.text_input("(Recommended) Send SMS notifications to:", placeholder="+63 999 999 9999", type="password")
    submit_button = st.form_submit_button(label="Monitor my child's conversations!")
 
 raw_spam_data = load_data()
