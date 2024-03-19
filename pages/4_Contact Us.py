@@ -18,9 +18,21 @@ st.markdown(Concerns, unsafe_allow_html=True)
 st.subheader('Email: onguard.vcis@gmail.com')
 st.subheader('Contact Number: +63 101 234 5678')
 
-
+    
 st.subheader('Social Media Platforms')
-socmed = '<p style="font-size: 20px;">Facebook: On Guard</p>'
-st.markdown(socmed, unsafe_allow_html=True)
-Instagram = '<p style="font-size: 20px;">Instagram: On Guard</p>'
-st.markdown(Instagram, unsafe_allow_html=True)
+
+col1, mid, col2 = st.columns([1,1,20])
+with col1:
+    on = Image.open('Facebook-Logo.png')
+    st.image(on, width=80)
+with col2:
+    s = f"<p style='font-size:20px;'>{'On Guard'}</p>"
+    st.markdown(s, unsafe_allow_html=True) 
+
+side, col1, mid, col2 = st.columns([0.5,1,0.5,20])
+with col1:
+    on = Image.open('Insta.png')
+    st.image(on, width=45)
+with col2:
+    s = f"<p style='font-size:20px;'>{'On Guard'}</p>"
+    st.markdown(s, unsafe_allow_html=True) 
