@@ -49,8 +49,11 @@ def load_whisper():
    w = whisper.load_model("base")
    return w
 
-logo = Image.open("on_guard_logo.jpg")
-st.image(logo, width=400)
+
+col1, col2 = st.columns([0.25,1])
+with col2:
+   logo = Image.open("on_guard_logo.jpg")
+   st.image(logo, width=400)
 
 with st.form(key="my_form", clear_on_submit=True):
    text = st.text_area("Text to analyze")
