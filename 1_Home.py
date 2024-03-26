@@ -1,7 +1,16 @@
 import streamlit as st
 from PIL import Image
 
+
+import time
+
+def get_data():
+    return [1, 2, 4, 3, 5]
+
+with st.spinner("ON GUARD"):
+    data = get_data()
     
+
 col1, col2 = st.columns([0.25,1])
 with col2:
    logo = Image.open("on_guard_logo.jpg")
