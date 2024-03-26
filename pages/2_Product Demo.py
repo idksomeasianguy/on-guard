@@ -87,11 +87,11 @@ def detect(text):
    text = [text]
    input_data_features = feature_extraction.transform(text)
    prediction = model.predict(input_data_features)
-   keywords = ["kys", "loser", "freak", "kill yourself"]
-   if any([x in keywords for x in text[0].split()]):
+   trigger_words = open("Trigger words.txt", "r")
+   trigger_words = trigger_words.readlines()
+   if any([x in trigger_words for x in text[0].split()]):
       prediction = [1]
    return prediction
-
 notif_text = []
 translator = GoogleTranslator(source="auto", target="en")
 reader = load_reader()
